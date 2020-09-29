@@ -82,7 +82,7 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, I am Nguissaly"
-    subtitle = "A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP\nAND RELEASED UNDER THE CREATIVE COMMONS."
+    subtitle = "Welcome to my web page,where I will be sharing a little bit about myself and a lot about my work"
     buttonText = "Get Started"
 
 
@@ -93,9 +93,10 @@ disqusShortname = ""
     
     [[params.tiles.showcase]]
       title = "About me"
-      subtitle = "Ipsum Dolor Sit Amet"
-      image = "pic01.jpg"
-      url = "blogs/aliquam"
+      subtitle = "Be a Rainbow in Someone's Cloud ~ Maya Angelou "
+      image = "Pink lake Senegal.jpeg"
+      url = "blogs/About me"
+      #Add source, Dakarlives
 
     [[params.tiles.showcase]]
       title = "Tempus"
@@ -187,7 +188,7 @@ disqusShortname = ""
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "London Business School"
 
     # Uses font awesome icons
     #[[params.footer.social]]
