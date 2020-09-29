@@ -95,7 +95,7 @@ disqusShortname = ""
       title = "About me"
       subtitle = "Be a Rainbow in Someone's Cloud ~ Maya Angelou "
       image = "Pink lake Senegal.jpeg"
-      url = "blogs/About me"
+      url = "blogs/aliquam"
       #Add source, Dakarlives
 
     [[params.tiles.showcase]]
