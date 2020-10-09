@@ -101,28 +101,28 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "GDP of the 3 countries I've lived in"
       #subtitle = "Feugiat Amet Tempus"
-      image = "pic02.jpg"
+      image = "pic03.jpg"
       url = "Projects/GDP"
 
     [[params.tiles.showcase]]
       title = "Magna"
       subtitle = "Lorem Etiam Nullam"
-      image = "pic03.jpg"
+      image = "pic02.jpg"
       url = "blogs/magna"
 
+    #[[params.tiles.showcase]]
+      #title = "Ipsum"
+      #subtitle = "Nisl Sed Aliquam"
+      #image = "pic04.jpg"
+      #url = "blogs/ipsum"
+
+    #[[params.tiles.showcase]]
+      #title = "Consequat"
+      #subtitle = "Ipsum Dolor Sit Amet"
+      #image = "pic05.jpg"
+      #url = "blogs/ipsum"
+
     [[params.tiles.showcase]]
-      title = "Ipsum"
-      subtitle = "Nisl Sed Aliquam"
-      image = "pic04.jpg"
-      url = "blogs/ipsum"
-
-    #[[params.tiles.showcase]]
-      title = "Consequat"
-      subtitle = "Ipsum Dolor Sit Amet"
-      image = "pic05.jpg"
-      url = "blogs/ipsum"
-
-    #[[params.tiles.showcase]]
       title = "Etiam"
       subtitle = "Feugiat Amet Tempus"
       image = "pic06.jpg"
