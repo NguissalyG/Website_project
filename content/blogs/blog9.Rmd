@@ -1,0 +1,219 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T21:28:43-05:00"
+#description: ""
+draft: false
+image: Connected World.jpg
+keywords: ""
+slug: blog9
+#title: Ipsum
+---
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+
+
+
+# General Social Survey (GSS)
+
+The [General Social Survey (GSS)](http://www.gss.norc.org/) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
+
+
+In this assignment we analyze data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but we are only interested in very few of these variables and you are using a smaller file.
+
+
+```{r, read_gss_data, cache=TRUE}
+gss <- read_csv(here::here("data", "smallgss2016.csv"), 
+                na = c("", "Don't know",
+                       "No answer", "Not applicable"))
+
+skim(gss)
+```
+
+You will also notice that many responses should not be taken into consideration, like "No Answer", "Don't Know", "Not applicable", "Refused to Answer".
+
+We will be creating 95% confidence intervals for population parameters. The variables we have are the following:
+
+- hours and minutes spent on email weekly. The responses to these questions are recorded in the `emailhr` and `emailmin` variables. For example, if the response is 2.50 hours, this would be recorded as emailhr = 2 and emailmin = 30.
+- `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016
+- `sex`: Female - Male
+- `degree`: highest education level attained
+
+## Instagram and Snapchat, by sex
+
+Can we estimate the *population* proportion of Snapchat or Instagram users in 2016?
+
+```{r, cache=TRUE}
+gss_tidy <- gss %>% 
+  mutate(snap_insta = case_when(
+    instagrm == "Yes" | snapchat == "Yes" ~ "Yes",
+    instagrm == "No" | snapchat == "No" ~ "No",
+    instagrm == "NA" & snapchat == "NA" ~ "NA"))
+
+gss_tidy %>%
+summarise(snap_insta_proportion=count(snap_insta == "Yes")/count(snap_insta, na.rm ==TRUE))
+
+formula_ci_social_media <- gss_tidy %>%
+  group_by(sex) %>% 
+  summarise(mean_snap_insta_yes = mean(snap_insta == "Yes"),
+          sd_snap_insta = sd(snap_insta  == "Yes"),
+          count = n(),
+          se_snap_insta = sd_snap_insta/sqrt(count),
+          t_critical = qt(0.975, count - 1),
+          lower_bound = mean_snap_insta_yes - t_critical * se_snap_insta,
+          upper_bound = mean_snap_insta_yes + t_critical * se_snap_insta)
+
+formula_ci_social_media
+```
+
+1. Create a  new variable, `snap_insta` that is *Yes* if the respondent reported using any of Snapchat (`snapchat`) or Instagram (`instagrm`), and *No* if not. If the recorded value was NA for both of these questions, the value in your new variable should also be NA. #done
+2. Calculate the proportion of Yes’s for `snap_insta` among those who answered the question, i.e. excluding NAs.
+3. Using the CI formula for proportions, please construct 95% CIs for men and women who used either Snapchat or Instagram
+
+## Twitter, by education level
+
+Can we estimate the *population* proportion of Twitter users by education level in 2016?
+
+There are 5 education levels in variable `degree` which, in ascending order of years of education, are Lt high school, High School, Junior college, Bachelor, Graduate. 
+
+1. Turn `degree` from a character variable into a factor variable. Make sure the order is the correct one and that levels are not sorted alphabetically which is what R by default does.
+```{r, cache=TRUE}
+
+factor_degree<-factor(gss_tidy$degree, ordered=TRUE, levels = c("Lt high school", "High School", "Junior college", "Bachelor", "Graduate"))
+
+levels(factor_degree)
+
+glimpse(factor_degree)
+```
+
+2. Create a  new variable, `bachelor_graduate` that is *Yes* if the respondent has either a `Bachelor` or `Graduate` degree. As before, if the recorded value for either was NA, the value in your new variable should also be NA.
+```{r, cache=TRUE}
+
+gss_tidy <- gss_tidy %>% 
+  mutate(bachelor_graduate = case_when(
+    factor_degree == "Bachelor" | factor_degree == "Graduate" ~ "Yes",
+    factor_degree == "NA" ~ "NA"
+  ))
+  
+gss_tidy
+```
+
+3. Calculate the proportion of `bachelor_graduate` who do (Yes) and who don't (No) use twitter.
+```{r, cache=TRUE}
+gss_tidy %>% 
+  filter(bachelor_graduate == "Yes") %>% 
+  summarise(prop_yes=count(twitter == "Yes")/count(bachelor_graduate == "Yes" & twitter != "NA"),
+            prop_no=count(twitter == "No")/count(bachelor_graduate == "Yes" & twitter != "NA"))
+  
+```
+
+4. Using the CI formula for proportions, please construct two 95% CIs for `bachelor_graduate` vs whether they use (Yes) and don't (No) use twitter.
+```{r, cache=TRUE} 
+CI_twitter_grad_yes <- gss_tidy %>%
+  filter(bachelor_graduate == "Yes") %>%
+  summarize(NUM=count(twitter%in%c('Yes','No')),
+            proportion_yes =count(twitter=='Yes')/NUM,
+            SD2=sqrt(proportion_yes*(1-proportion_yes)/NUM),
+            upper=proportion_yes+SD2*1.96,
+            lower=proportion_yes-SD2*1.96)
+
+CI_twitter_grad_no <- gss_tidy %>%
+  filter(bachelor_graduate == "Yes") %>%
+  summarize(NUM=count(twitter%in%c('Yes','No')),
+            proportion_no =count(twitter=='No')/NUM,
+            SD2=sqrt(proportion_no*(1-proportion_no)/NUM),
+            upper=proportion_no+SD2*1.96,
+            lower=proportion_no-SD2*1.96)
+
+CI_twitter_grad_yes
+CI_twitter_grad_no
+```
+
+5. Do these two Confidence Intervals overlap?
+>Clearly no, due to proportion split and the large sample size, reducing the standard error.
+
+
+## Email usage
+
+Can we estimate the *population* parameter on time spent on email weekly?
+
+1. Create a new variable called `email` that combines `emailhr` and `emailmin` to reports the number of minutes the respondents spend on email weekly.
+2. Visualise the distribution of this new variable. Find the mean and the median number of minutes respondents spend on email weekly. Is the mean or the median a better measure of the typical amoung of time Americans spend on email weekly? Why?
+```{r, cache=TRUE, warning=FALSE}
+
+hrs_num <- as.numeric(gss_tidy$emailhr)
+min_num <- as.numeric(gss_tidy$emailmin)
+hrs_in_min = 60*hrs_num
+
+gss_tidy <-gss_tidy %>% 
+  mutate(email = hrs_in_min + min_num)
+
+gss_tidy%>% 
+  ggplot(aes(x=email))+
+  geom_histogram(bindwith =5,color= "white")+
+  labs(title = "Americans spend up to 100 hours reading emails!!",
+       subtitle = "Distribution of time spent reading emails, weekly",
+         x= "Minutes spent reading emails", 
+         y = "Number of respondents")
+
+gss_tidy %>% 
+  summarise(mean_email=mean(email,na.rm=TRUE),median_email =median(email,na.rm=TRUE))
+  
+#Median better than mean as it does not take into account extreme values
+#Think about the space between the bars
+```
+
+3. Using the `infer` package, calculate a 95% bootstrap confidence interval for the mean amount of time Americans spend on email weekly. Interpret this interval in context of the data, reporting its endpoints in “humanized” units (e.g. instead of 108 minutes, report 1 hr and 8 minutes). If you get a result that seems a bit odd, discuss why you think this might be the case.
+4. Would you expect a 99% confidence interval to be wider or narrower than the interval you calculated above? Explain your reasoning.
+```{r, cache=TRUE}
+library(infer)
+bootstrap_email<- gss_tidy%>% 
+  specify(response= email) %>% 
+  generate(reps=1000, 
+           type = "bootstrap") %>% 
+  calculate(stat="mean") 
+  
+glimpse(bootstrap_email)
+
+ci_bootstarp_email <- bootstrap_email %>% 
+  get_ci(level=0.95
+      , type= "percentile")
+
+ci_bootstarp_email
+
+```
+
+
+
+      

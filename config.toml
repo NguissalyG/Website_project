@@ -96,7 +96,7 @@ disqusShortname = ""
       subtitle = "Be a Rainbow in Someone's Cloud ~ Maya Angelou "
       image = "Pink lake Senegal.jpeg"
       url = "blogs/blog6"
-      #Add source, Dakarlives
+      
 
     [[params.tiles.showcase]]
       title = "GDP of the 3 countries I've lived in"
@@ -126,7 +126,7 @@ disqusShortname = ""
       title = "A connected world"
       subtitle = "How long do americans spend reading emails on a week?"
       image = "pic06.jpg"
-      url = "blogs/ipsum"
+      url = "blogs/blog9"
     # You can make more showcases by copy and pasting the code above
 
   [params.blog]
