@@ -1,0 +1,99 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+#description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis tempus.
+draft: false
+image: World.png
+keywords: ""
+slug: blog7
+title: GDP of the 3 countries I've lived in
+---
+
+
+
+<p>At the risk of oversimplifying things, the main components of gross domestic product, GDP are personal consumption (C), business investment (I), government spending (G) and net exports (exports - imports). You can read more about GDP and the different approaches in calculating at the <a href="https://en.wikipedia.org/wiki/Gross_domestic_product">Wikipedia GDP page</a>.</p>
+<p>The GDP data we will look at is from the <a href="https://unstats.un.org/unsd/snaama/Downloads">United Nations’ National Accounts Main Aggregates Database</a>, which contains estimates of total GDP and its components for all countries from 1970 to today. We will look at how GDP and its components have changed over time, and compare different countries and how much each component contributes to that country’s GDP. The file we will work with is <a href="http://unstats.un.org/unsd/amaapi/api/file/6">GDP and its breakdown at constant 2010 prices in US Dollars</a> and it has already been saved in the Data directory. Have a look at the Excel file to see how it is structured and organised</p>
+<pre class="r"><code>UN_GDP_data  &lt;-  read_excel(here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
+                sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
+                skip=2)
+#UN_GDP_data  &lt;-  read_excel(here::here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
+                #sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
+                #skip=2) # Number of rows to skip</code></pre>
+<p>The first thing we need to do is to tidy the data, as it is in wide format and you must make it into long, tidy format. We are expressing all figures in billions (divide values by <code>1e9</code>, or <span class="math inline">\(10^9\)</span>).</p>
+<pre class="r"><code>tidy_GDP_data  &lt;- UN_GDP_data %&gt;% 
+  pivot_longer(col=4:51, #pivoting column 4 to 51 of  the UN_GDP_data table to a longer format
+               names_to = &quot;Years&quot;, #headers of column 4 to 51 now appear in one column as years 
+               values_to =&quot;Estimates&quot;) #values in columb 4 to 51 now appear in a second column named estimates 
+
+
+tidy_GDP_data$Estimates = tidy_GDP_data$Estimates/1e9
+
+glimpse(tidy_GDP_data)</code></pre>
+<pre><code>## Rows: 176,880
+## Columns: 5
+## $ CountryID     &lt;dbl&gt; 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4…
+## $ Country       &lt;chr&gt; &quot;Afghanistan&quot;, &quot;Afghanistan&quot;, &quot;Afghanistan&quot;, &quot;Afghanist…
+## $ IndicatorName &lt;chr&gt; &quot;Final consumption expenditure&quot;, &quot;Final consumption exp…
+## $ Years         &lt;chr&gt; &quot;1970&quot;, &quot;1971&quot;, &quot;1972&quot;, &quot;1973&quot;, &quot;1974&quot;, &quot;1975&quot;, &quot;1976&quot;,…
+## $ Estimates     &lt;dbl&gt; 5.56, 5.33, 5.20, 5.75, 6.15, 6.32, 6.37, 6.90, 7.09, 6…</code></pre>
+<pre class="r"><code># Let us compare GDP components for these 3 countries
+country_list &lt;- c(&quot;Senegal&quot;,&quot;Canada&quot;, &quot;United Kingdom&quot;)
+
+
+glimpse(country_list)</code></pre>
+<pre><code>##  chr [1:3] &quot;Senegal&quot; &quot;Canada&quot; &quot;United Kingdom&quot;</code></pre>
+<p><img src="/blogs/blog7_files/figure-html/gdp1-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Secondly, recall that GDP is the sum of Household Expenditure (Consumption <em>C</em>), Gross Capital Formation (business investment <em>I</em>), Government Expenditure (G) and Net Exports (exports - imports). Even though there is an indicator <code>Gross Domestic Product (GDP)</code> in your dataframe, I would like to calculate it given its components discussed above.</p>
+<pre><code>## # A tibble: 144 x 14
+##    CountryID Country Years Consumption Government_Expe… Gross_capital_f… Exports
+##        &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt;
+##  1       124 Canada  1970         266.             144.             85.0    94.0
+##  2       124 Canada  1971         282.             148.             92.2    98.3
+##  3       124 Canada  1972         301.             153.             97.7   107. 
+##  4       124 Canada  1973         321.             160.            110.    117. 
+##  5       124 Canada  1974         338.             170.            122.    112. 
+##  6       124 Canada  1975         350.             181.            122.    103. 
+##  7       124 Canada  1976         368.             185.            130.    111. 
+##  8       124 Canada  1977         379.             194.            130.    118. 
+##  9       124 Canada  1978         390.             197.            131.    130. 
+## 10       124 Canada  1979         399.             199.            149.    134. 
+## # … with 134 more rows, and 7 more variables: Imports &lt;dbl&gt;, Net_Exports &lt;dbl&gt;,
+## #   GDP &lt;dbl&gt;, Prop_C &lt;dbl&gt;, Prop_I &lt;dbl&gt;, Prop_G &lt;dbl&gt;, Prop_NE &lt;dbl&gt;</code></pre>
+<pre class="r"><code>#Pivot longer to have all propotions in one column
+GDP_calculated_longer &lt;- GDP_calculated %&gt;% 
+  select(-c(1,4,5,6,7,8,9,10)) %&gt;% #deselecting these for columns and will only have 6 left
+  pivot_longer(cols= 3:6, #first and second columns will be country and years, we do not want to pivot those
+               names_to = &quot;Components_of_GDP&quot;,
+               values_to = &quot;Proportions_of_GDP&quot;)
+
+#Plotting the grap
+Graph_2 &lt;- GDP_calculated_longer %&gt;% 
+  ggplot(aes(x= Years,
+             y= Proportions_of_GDP,
+             group=Components_of_GDP, 
+             color=Components_of_GDP))+
+  geom_line()+
+  facet_wrap(~Country)+
+  labs(title = &quot;GDP and its breakdown at constant 2010 prices in US Dollars&quot;,
+       x = &quot;&quot;,
+       y = &quot;Proportion&quot;)+
+    scale_x_discrete(breaks =seq(1970,2010,10))+
+    scale_y_continuous(labels = scales :: percent)+
+  
+  NULL
+
+#Changin legend
+Graph_2 + scale_colour_discrete(name =&quot;&quot;,
+                      breaks= c(&quot;Prop_C&quot;,
+                    &quot;Prop_I&quot;,
+                    &quot;Prop_G&quot;,
+                    &quot;Prop_NE&quot;),
+                    labels= c(&quot;Household expenditure&quot;,
+                              &quot;Gross capital formation&quot;,
+                              &quot;Government expenditure&quot;,
+                              &quot;Net Exports&quot;))+
+  
+  NULL</code></pre>
+<p><img src="/blogs/blog7_files/figure-html/plot%20new%20GDP%20calculation-1.png" width="648" style="display: block; margin: auto;" /></p>
