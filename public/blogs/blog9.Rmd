@@ -5,7 +5,7 @@ categories:
 date: "2017-10-31T21:28:43-05:00"
 #description: ""
 draft: false
-image: Connected World.jpg
+image: A connected world.jpg
 keywords: ""
 slug: blog9
 #title: Ipsum
@@ -215,5 +215,5 @@ ci_bootstarp_email
 
 ```
 
->> I am are 95% confident that, on average, Americans spend between 6 hours and 23 minutes and 7 hours and 30 minutes reading emails each week… 
+>> I am 95% confident that, on average, Americans spend between 6 hours and 23 minutes and 7 hours and 30 minutes reading emails each week… 
       
