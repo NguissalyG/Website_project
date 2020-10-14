@@ -94,7 +94,7 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "About me"
       subtitle = "Be a Rainbow in Someone's Cloud ~ Maya Angelou "
-      image = "Pink lake Senegal.jpeg"
+      image = "NGinCanaryW.jpeg"
       url = "blogs/blog6"
       
 
@@ -105,10 +105,10 @@ disqusShortname = ""
       url = "blogs/blog7"
 
     [[params.tiles.showcase]]
-      title = "Magna"
-      subtitle = "Lorem Etiam Nullam"
-      image = "pic02.jpg"
-      url = "blogs/magna"
+      title = "Cool with the bull"
+      subtitle = "Understanding finance with R"
+      image = "NGinWallS.jpeg"
+      url = "blogs/blog8"
 
     #[[params.tiles.showcase]]
       #title = "Ipsum"

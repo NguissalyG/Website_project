@@ -1,0 +1,100 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+#description: Lorem Etiam Nullam
+draft: false
+image: pic09.jpg
+keywords: ""
+slug: blog8
+title: Finance with R
+---
+
+
+
+<div id="introduction-to-the-capital-asset-pricing-model-capm" class="section level1">
+<h1>Introduction to the Capital Asset Pricing Model (CAPM)</h1>
+<p>A fundamental idea in finance is that investors need financial incentives to take on risk. Thus, the expected return R on a risky investment, e.g., a stock, should exceed the risk-free return Rf, or the excess return (R - Rf) should be positive. Typically, for risk-free rate we use short-term government bonds, like the US 3-month treasury bills <a href="https://finance.yahoo.com/quote/%5EIRX?p=%5EIRX" class="uri">https://finance.yahoo.com/quote/%5EIRX?p=^IRX</a></p>
+<p>The Capital Asset Market Pricing Model (CAPM) states that the return on a particular risky asset is related to returns of the ‘market’ as follows:</p>
+<p><span class="math inline">\(Return(asset) = \alpha + \beta*Return(market)+error\)</span></p>
+<p>The <span class="math inline">\(\alpha\)</span> is the “excess return” of a stock. According to the CAPM, this “excess return” is the reward for taking on the “specific risk” of the stock. As this risk can be eliminated through holding a diversified portfolio, CAPM says the excess return should be close to zero.</p>
+<p>The <span class="math inline">\(\beta\)</span> is a measure of the “market risk” of a stock. It is an indication of how sensitive the stock is to movements in the market as a whole; for a 1% market movement, <span class="math inline">\(\beta=1\)</span> implies the stock tends to move 1%, <span class="math inline">\(\beta&lt;1\)</span> means the stock tends to move by less than 1%, whereas <span class="math inline">\(\beta&gt;1\)</span> means the stock tends to move more than 1%, or it ‘exaggerates’ market movements.</p>
+<p>Here, I will run linear regressions to estimate the <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> of a couple of stocks, as well as their specific risk. I will use the `tidyquant package to download historical prices off the internet and will also see some R code that allow me to calculate a rolling beta. I will explore the relationship between returns (%) of the market (SPY, an ETF that tracks the S&amp;P500) and for a number of stocks, namely WalMart (ticker symbol: WMT), JPMorgan (JPM), Burberry Group plc (BURBY), LVMH Moët Hennessy - Louis Vuitton, Société Européenne (LVMHF), and BlackRock, Inc. (BLK).</p>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the data</h2>
+<p>The <code>tidyquant</code> package comes with a number of functions- utlities that allow me to download financial data off the web, as well as ways of handling all this data.</p>
+<p>I begin by loading the data set into the R workspace. We create a collection of stocks with their ticker symbols and then use the <em>piping</em> operator <em>%&gt;%</em> to use tidyquant’s <code>tq_get</code> to download historical data from Jan 1, 2011 to Dec 31, 2017 using Yahoo finance and, again, to group data by their ticker symbol.</p>
+<pre class="r"><code>myStocks &lt;- c(&quot;WMT&quot;,&quot;JPM&quot;,&quot;BURBY&quot;,&quot;LVMHF&quot;,&quot;BLK&quot;,&quot;SPY&quot; ) %&gt;%
+  tq_get(get  = &quot;stock.prices&quot;,
+         from = &quot;2017-08-01&quot;,
+         to   = &quot;2020-09-30&quot;) %&gt;%
+  group_by(symbol) 
+
+str(myStocks) # examine the structure of the resulting data frame</code></pre>
+<pre><code>## tibble [4,782 × 8] (S3: grouped_df/tbl_df/tbl/data.frame)
+##  $ symbol  : chr [1:4782] &quot;WMT&quot; &quot;WMT&quot; &quot;WMT&quot; &quot;WMT&quot; ...
+##  $ date    : Date[1:4782], format: &quot;2017-08-01&quot; &quot;2017-08-02&quot; ...
+##  $ open    : num [1:4782] 80.2 80.3 81.3 81.1 80.6 ...
+##  $ high    : num [1:4782] 80.7 81.1 81.8 81.4 81.4 ...
+##  $ low     : num [1:4782] 80 80.3 80.7 80.2 80.5 ...
+##  $ close   : num [1:4782] 80.5 80.5 80.9 80.5 81.3 ...
+##  $ volume  : num [1:4782] 5726500 8673000 9946900 7141800 5484500 ...
+##  $ adjusted: num [1:4782] 74.8 74.8 75.2 74.8 75.5 ...
+##  - attr(*, &quot;groups&quot;)= tibble [6 × 2] (S3: tbl_df/tbl/data.frame)
+##   ..$ symbol: chr [1:6] &quot;BLK&quot; &quot;BURBY&quot; &quot;JPM&quot; &quot;LVMHF&quot; ...
+##   ..$ .rows : list&lt;int&gt; [1:6] 
+##   .. ..$ : int [1:797] 3189 3190 3191 3192 3193 3194 3195 3196 3197 3198 ...
+##   .. ..$ : int [1:797] 1595 1596 1597 1598 1599 1600 1601 1602 1603 1604 ...
+##   .. ..$ : int [1:797] 798 799 800 801 802 803 804 805 806 807 ...
+##   .. ..$ : int [1:797] 2392 2393 2394 2395 2396 2397 2398 2399 2400 2401 ...
+##   .. ..$ : int [1:797] 3986 3987 3988 3989 3990 3991 3992 3993 3994 3995 ...
+##   .. ..$ : int [1:797] 1 2 3 4 5 6 7 8 9 10 ...
+##   .. ..@ ptype: int(0) 
+##   ..- attr(*, &quot;.drop&quot;)= logi TRUE</code></pre>
+<p>For each ticker symbol, the data frame contains its <code>symbol</code>, the <code>date</code>, the prices for <code>open</code>,<code>high</code>, <code>low</code> and <code>close</code>, and the <code>volume</code>, or how many stocks were traded on that day. More importantly, the data frame contains the <code>adjusted</code> closing price, which adjusts for any stock splits and/or dividends paid and this is what we will be using for our analyses.</p>
+<p>Towards the end, you can see a line <code>- attr(*, "group_sizes")= int  1761 1761 1761 1761 1761 1761 1761 1761</code>.
+Since I grouped the data by its ticker symbol, I can see that over the course of 7 years (2011-2017) we have 1761 trading days, or roughly 250 trading days per year.</p>
+<p>Financial performance and CAPM analysis depend on <strong>returns</strong> and not on <strong>adjusted closing prices</strong>. So given the adjusted closing prices, the firststep is to calculate daily and monthly returns.</p>
+<p>For yearly and monthly data, I assume discrete changes, so the formula used to calculate the return for month <strong>(t+1)</strong> is</p>
+<p><span class="math inline">\(Return(t+1)= \frac{Adj.Close(t+1)}{Adj.Close (t)}-1\)</span></p>
+<p>For daily data we use log returns, or <span class="math inline">\(Return(t+1)= LN\frac{Adj.Close(t+1)}{Adj.Close (t)}\)</span></p>
+<p>The reason I use log returns are:</p>
+<ol style="list-style-type: lower-alpha">
+<li><p>Compound interest interpretation; namely, that the log return can be interpreted as the continuously (rather than discretely) compounded rate of return</p></li>
+<li><p>Log returns are assumed to follow a normal distribution</p></li>
+<li><p>Log return over n periods is the sum of n log returns</p></li>
+</ol>
+<p>I am curious to see what my investments would have grown to, of we had invested $1000 in each of the assets on Aug 1, 2017.</p>
+<p><img src="/blogs/blog8_files/figure-html/wealth_index-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="scatterplots-of-individual-stocks-returns-versus-sp500-index-returns." class="section level2">
+<h2>Scatterplots of individual stocks returns versus S&amp;P500 Index returns.</h2>
+<p>Besides these exploratory graphs of returns and price evolution, I also need to create scatterplots among the returns of different stocks. <code>ggpairs</code> crates a scattterplot matrix that shows the distribution of returns for each stock, and a matrix of scatter plots and correlations.</p>
+<p><img src="/blogs/blog8_files/figure-html/correlationMatrix-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>The next step is to fit a liner regression model to calculate the <span class="math inline">\(\beta\)</span> of LVMH. After fitting the model, we produce a summary table for the regression model, a 95% confidence interval for the coefficients, and an ANOVA table that shows the split of variability (<code>Sum Sq</code>) of LVMH returns and what portion ix explained by the market (<code>SPY</code>) versus the unexplained residuals.</p>
+<p><img src="/blogs/blog8_files/figure-html/AAPL_CAPM-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.01215    0.00841    1.45     0.16    
+## SPY          0.77219    0.16721    4.62  4.8e-05 ***
+## 
+## Residual standard error: 0.0506 on 36 degrees of freedom
+## Multiple R-squared:  0.372,  Adjusted R-squared:  0.355 
+## F-statistic: 21.3 on 1 and 36 DF,  p-value: 4.8e-05</code></pre>
+<pre><code>## # A tibble: 2 x 7
+##   term        estimate std.error statistic   p.value conf.low conf.high
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)   0.0122   0.00841      1.45 0.157     -0.00490    0.0292
+## 2 SPY           0.772    0.167        4.62 0.0000480  0.433      1.11</code></pre>
+<pre><code>## # A tibble: 1 x 12
+##   r.squared adj.r.squared  sigma statistic p.value    df logLik   AIC   BIC
+##       &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     0.372         0.355 0.0506      21.3 4.80e-5     1   60.5 -115. -110.
+## # … with 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+<blockquote>
+<blockquote>
+<p>LVMH has a beta of 0.77 using returns from Jan 1st 2011 to Dec 31st 2017. 35% of it’s return are explained by the systematic risk.</p>
+</blockquote>
+</blockquote>
+</div>
+</div>

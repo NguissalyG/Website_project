@@ -33,7 +33,7 @@ While at HEC, I had the opportunity to live for sixth months I had the opportuni
       
       <guid>/blogs/blog7/</guid>
       <description>At the risk of oversimplifying things, the main components of gross domestic product, GDP are personal consumption (C), business investment (I), government spending (G) and net exports (exports - imports). You can read more about GDP and the different approaches in calculating at the Wikipedia GDP page.
-The GDP data we will look at is from the United Nations’ National Accounts Main Aggregates Database, which contains estimates of total GDP and its components for all countries from 1970 to today.</description>
+The GDP data I will look at is from the United Nations’ National Accounts Main Aggregates Database, which contains estimates of total GDP and its components for all countries from 1970 to today.</description>
     </item>
     
     <item>
@@ -43,6 +43,16 @@ The GDP data we will look at is from the United Nations’ National Accounts Mai
       
       <guid>/blogs/tempus/</guid>
       <description></description>
+    </item>
+    
+    <item>
+      <title>Finance with R</title>
+      <link>/blogs/blog8/</link>
+      <pubDate>Tue, 31 Oct 2017 22:26:09 -0500</pubDate>
+      
+      <guid>/blogs/blog8/</guid>
+      <description>Introduction to the Capital Asset Pricing Model (CAPM) A fundamental idea in finance is that investors need financial incentives to take on risk. Thus, the expected return R on a risky investment, e.g., a stock, should exceed the risk-free return Rf, or the excess return (R - Rf) should be positive. Typically, for risk-free rate we use short-term government bonds, like the US 3-month treasury bills https://finance.yahoo.com/quote/%5EIRX?p=^IRX
+The Capital Asset Market Pricing Model (CAPM) states that the return on a particular risky asset is related to returns of the ‘market’ as follows:</description>
     </item>
     
     <item>
@@ -61,7 +71,7 @@ The GDP data we will look at is from the United Nations’ National Accounts Mai
       
       <guid>/blogs/blog9/</guid>
       <description>General Social Survey (GSS) The General Social Survey (GSS) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
-In this assignment we analyze data from the 2016 GSS sample data, using it to estimate values of population parameters of interest about US adults.</description>
+Here, I analyze data from the 2016 GSS sample data, using it to estimate values of population parameters of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but I am only interested in very few of these variables and thus, I am using a smaller file.</description>
     </item>
     
     <item>

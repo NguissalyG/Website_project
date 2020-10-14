@@ -14,18 +14,16 @@ title: GDP of the 3 countries I've lived in
 
 
 <p>At the risk of oversimplifying things, the main components of gross domestic product, GDP are personal consumption (C), business investment (I), government spending (G) and net exports (exports - imports). You can read more about GDP and the different approaches in calculating at the <a href="https://en.wikipedia.org/wiki/Gross_domestic_product">Wikipedia GDP page</a>.</p>
-<p>The GDP data we will look at is from the <a href="https://unstats.un.org/unsd/snaama/Downloads">United Nations’ National Accounts Main Aggregates Database</a>, which contains estimates of total GDP and its components for all countries from 1970 to today. We will look at how GDP and its components have changed over time, and compare different countries and how much each component contributes to that country’s GDP. The file we will work with is <a href="http://unstats.un.org/unsd/amaapi/api/file/6">GDP and its breakdown at constant 2010 prices in US Dollars</a> and it has already been saved in the Data directory. Have a look at the Excel file to see how it is structured and organised</p>
-<pre class="r"><code>UN_GDP_data  &lt;-  read_excel(here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
+<p>The GDP data I will look at is from the <a href="https://unstats.un.org/unsd/snaama/Downloads">United Nations’ National Accounts Main Aggregates Database</a>, which contains estimates of total GDP and its components for all countries from 1970 to today. I will look at how GDP and its components have changed over time, and compare different countries and how much each component contributes to that country’s GDP. The file I will work with is <a href="http://unstats.un.org/unsd/amaapi/api/file/6">GDP and its breakdown at constant 2010 prices in US Dollars</a></p>
+<pre class="r"><code> #Reading the data set
+UN_GDP_data  &lt;-  read_excel(here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
                 sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
-                skip=2)
-#UN_GDP_data  &lt;-  read_excel(here::here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
-                #sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
-                #skip=2) # Number of rows to skip</code></pre>
-<p>The first thing we need to do is to tidy the data, as it is in wide format and you must make it into long, tidy format. We are expressing all figures in billions (divide values by <code>1e9</code>, or <span class="math inline">\(10^9\)</span>).</p>
+                skip=2)</code></pre>
+<p>The first thing I need to do is to tidy the data, as it is in wide format and I must make it into long, tidy format. I am expressing all figures in billions (divide values by <code>1e9</code>, or <span class="math inline">\(10^9\)</span>).</p>
 <pre class="r"><code>tidy_GDP_data  &lt;- UN_GDP_data %&gt;% 
   pivot_longer(col=4:51, #pivoting column 4 to 51 of  the UN_GDP_data table to a longer format
                names_to = &quot;Years&quot;, #headers of column 4 to 51 now appear in one column as years 
-               values_to =&quot;Estimates&quot;) #values in columb 4 to 51 now appear in a second column named estimates 
+               values_to =&quot;Estimates&quot;) #values in column 4 to 51 now appear in a second column named estimates 
 
 
 tidy_GDP_data$Estimates = tidy_GDP_data$Estimates/1e9
@@ -45,7 +43,7 @@ country_list &lt;- c(&quot;Senegal&quot;,&quot;Canada&quot;, &quot;United Kingdo
 glimpse(country_list)</code></pre>
 <pre><code>##  chr [1:3] &quot;Senegal&quot; &quot;Canada&quot; &quot;United Kingdom&quot;</code></pre>
 <p><img src="/blogs/blog7_files/figure-html/gdp1-1.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>Secondly, recall that GDP is the sum of Household Expenditure (Consumption <em>C</em>), Gross Capital Formation (business investment <em>I</em>), Government Expenditure (G) and Net Exports (exports - imports). Even though there is an indicator <code>Gross Domestic Product (GDP)</code> in your dataframe, I would like to calculate it given its components discussed above.</p>
+<p>Secondly, recall that GDP is the sum of Household Expenditure (Consumption <em>C</em>), Gross Capital Formation (business investment <em>I</em>), Government Expenditure (G) and Net Exports (exports - imports). Even though there is an indicator <code>Gross Domestic Product (GDP)</code> in my dataframe, I would like to calculate it given its components discussed above and then determine how much each component contributes to that country’s GDP.</p>
 <pre><code>## # A tibble: 144 x 14
 ##    CountryID Country Years Consumption Government_Expe… Gross_capital_f… Exports
 ##        &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;   &lt;dbl&gt;

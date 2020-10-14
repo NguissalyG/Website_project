@@ -50,10 +50,12 @@ library(vroom)
 The [General Social Survey (GSS)](http://www.gss.norc.org/) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
 
 
-In this assignment we analyze data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but we are only interested in very few of these variables and you are using a smaller file.
+Here, I  analyze data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but I am only interested in very few of these variables and thus, I am using a smaller file.
 
 
 ```{r, read_gss_data, cache=TRUE}
+
+#Skin through the data to know the type of variables I have
 gss <- read_csv(here::here("data", "smallgss2016.csv"), 
                 na = c("", "Don't know",
                        "No answer", "Not applicable"))
@@ -61,9 +63,9 @@ gss <- read_csv(here::here("data", "smallgss2016.csv"),
 skim(gss)
 ```
 
-You will also notice that many responses should not be taken into consideration, like "No Answer", "Don't Know", "Not applicable", "Refused to Answer".
+We can notice that many responses should not be taken into consideration, like "No Answer", "Don't Know", "Not applicable", "Refused to Answer".
 
-We will be creating 95% confidence intervals for population parameters. The variables we have are the following:
+I will be creating 95% confidence intervals for population parameters. The variables I have are the following:
 
 - hours and minutes spent on email weekly. The responses to these questions are recorded in the `emailhr` and `emailmin` variables. For example, if the response is 2.50 hours, this would be recorded as emailhr = 2 and emailmin = 30.
 - `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016
@@ -72,9 +74,14 @@ We will be creating 95% confidence intervals for population parameters. The vari
 
 ## Instagram and Snapchat, by sex
 
-Can we estimate the *population* proportion of Snapchat or Instagram users in 2016?
+I will estimate the *population* proportion of Snapchat or Instagram users in 2016 by doing the following :
+
+1. Create a  new variable, `snap_insta` that is *Yes* if the respondent reported using any of Snapchat (`snapchat`) or Instagram (`instagrm`), and *No* if not. If the recorded value was NA for both of these questions, the value in your new variable should also be NA. 
+2. Calculate the proportion of Yes’s for `snap_insta` among those who answered the question, i.e. excluding NAs.
+3. Using the CI formula for proportions, construct 95% CIs for men and women who used either Snapchat or Instagram
 
 ```{r, cache=TRUE}
+
 gss_tidy <- gss %>% 
   mutate(snap_insta = case_when(
     instagrm == "Yes" | snapchat == "Yes" ~ "Yes",
@@ -97,15 +104,13 @@ formula_ci_social_media <- gss_tidy %>%
 formula_ci_social_media
 ```
 
-1. Create a  new variable, `snap_insta` that is *Yes* if the respondent reported using any of Snapchat (`snapchat`) or Instagram (`instagrm`), and *No* if not. If the recorded value was NA for both of these questions, the value in your new variable should also be NA. #done
-2. Calculate the proportion of Yes’s for `snap_insta` among those who answered the question, i.e. excluding NAs.
-3. Using the CI formula for proportions, please construct 95% CIs for men and women who used either Snapchat or Instagram
+
 
 ## Twitter, by education level
 
-Can we estimate the *population* proportion of Twitter users by education level in 2016?
+I want to estimate the *population* proportion of Twitter users by education level in 2016?
 
-There are 5 education levels in variable `degree` which, in ascending order of years of education, are Lt high school, High School, Junior college, Bachelor, Graduate. 
+There are 5 education levels in variable `degree` which, in ascending order of years of education, are Lt high school, High School, Junior college, Bachelor, Graduate. Therefore, I need to : 
 
 1. Turn `degree` from a character variable into a factor variable. Make sure the order is the correct one and that levels are not sorted alphabetically which is what R by default does.
 ```{r, cache=TRUE}
@@ -138,7 +143,7 @@ gss_tidy %>%
   
 ```
 
-4. Using the CI formula for proportions, please construct two 95% CIs for `bachelor_graduate` vs whether they use (Yes) and don't (No) use twitter.
+4. Using the CI formula for proportions,construct two 95% CIs for `bachelor_graduate` vs whether they use (Yes) and don't (No) use twitter.
 ```{r, cache=TRUE} 
 CI_twitter_grad_yes <- gss_tidy %>%
   filter(bachelor_graduate == "Yes") %>%
@@ -160,16 +165,14 @@ CI_twitter_grad_yes
 CI_twitter_grad_no
 ```
 
-5. Do these two Confidence Intervals overlap?
->Clearly no, due to proportion split and the large sample size, reducing the standard error.
-
 
 ## Email usage
 
-Can we estimate the *population* parameter on time spent on email weekly?
+I want to estimate the *population* parameter on time spent on email weekly by doing the following :
 
 1. Create a new variable called `email` that combines `emailhr` and `emailmin` to reports the number of minutes the respondents spend on email weekly.
-2. Visualise the distribution of this new variable. Find the mean and the median number of minutes respondents spend on email weekly. Is the mean or the median a better measure of the typical amoung of time Americans spend on email weekly? Why?
+2. Visualise the distribution of this new variable. Find the mean and the median number of minutes respondents spend on email weekly. 
+
 ```{r, cache=TRUE, warning=FALSE}
 
 hrs_num <- as.numeric(gss_tidy$emailhr)
@@ -189,13 +192,11 @@ gss_tidy%>%
 
 gss_tidy %>% 
   summarise(mean_email=mean(email,na.rm=TRUE),median_email =median(email,na.rm=TRUE))
-  
-#Median better than mean as it does not take into account extreme values
-#Think about the space between the bars
+ 
 ```
 
-3. Using the `infer` package, calculate a 95% bootstrap confidence interval for the mean amount of time Americans spend on email weekly. Interpret this interval in context of the data, reporting its endpoints in “humanized” units (e.g. instead of 108 minutes, report 1 hr and 8 minutes). If you get a result that seems a bit odd, discuss why you think this might be the case.
-4. Would you expect a 99% confidence interval to be wider or narrower than the interval you calculated above? Explain your reasoning.
+3. Using the `infer` package, calculate a 95% bootstrap confidence interval for the mean amount of time Americans spend on email weekly. Interpret this interval in context of the data, reporting its endpoints in “humanized” units (e.g. instead of 108 minutes, report 1 hr and 8 minutes).
+
 ```{r, cache=TRUE}
 library(infer)
 bootstrap_email<- gss_tidy%>% 
@@ -214,6 +215,5 @@ ci_bootstarp_email
 
 ```
 
-
-
+>> I am are 95% confident that, on average, Americans spend between 6 hours and 23 minutes and 7 hours and 30 minutes reading emails each week… 
       
