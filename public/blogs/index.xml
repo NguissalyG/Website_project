@@ -46,7 +46,7 @@ The GDP data I will look at is from the United Nations’ National Accounts Main
     </item>
     
     <item>
-      <title>Finance with R</title>
+      <title>A fun way to understand finance</title>
       <link>/blogs/blog8/</link>
       <pubDate>Tue, 31 Oct 2017 22:26:09 -0500</pubDate>
       
@@ -65,22 +65,22 @@ The Capital Asset Market Pricing Model (CAPM) states that the return on a partic
     </item>
     
     <item>
-      <title></title>
-      <link>/blogs/blog9/</link>
-      <pubDate>Tue, 31 Oct 2017 21:28:43 -0500</pubDate>
-      
-      <guid>/blogs/blog9/</guid>
-      <description>General Social Survey (GSS) The General Social Survey (GSS) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
-Here, I analyze data from the 2016 GSS sample data, using it to estimate values of population parameters of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but I am only interested in very few of these variables and thus, I am using a smaller file.</description>
-    </item>
-    
-    <item>
       <title>Ipsum</title>
       <link>/blogs/ipsum/</link>
       <pubDate>Tue, 31 Oct 2017 21:28:43 -0500</pubDate>
       
       <guid>/blogs/ipsum/</guid>
       <description>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis tempus.</description>
+    </item>
+    
+    <item>
+      <title>US adults and Social media</title>
+      <link>/blogs/blog9/</link>
+      <pubDate>Tue, 31 Oct 2017 21:28:43 -0500</pubDate>
+      
+      <guid>/blogs/blog9/</guid>
+      <description>General Social Survey (GSS) The General Social Survey (GSS) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
+Here, I analyze data from the 2016 GSS sample data, using it to estimate values of population parameters of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but I am only interested in very few of these variables and thus, I am using a smaller file.</description>
     </item>
     
   </channel>

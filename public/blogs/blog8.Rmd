@@ -8,7 +8,7 @@ draft: false
 image: Finance with R.png
 keywords: ""
 slug: blog8
-title: Finance with R
+title: A fun way to understand finance
 ---
 
 
